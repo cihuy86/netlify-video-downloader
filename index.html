@@ -1,1 +1,42 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Video/Audio</title>
+    <style>body{font-family:sans-serif;max-width:600px;margin:40px auto;}</style>
+</head>
+<body>
+    <h1>Download MP3/MP4</h1>
+    <input type="url" id="url" placeholder="Link YouTube, TikTok, Instagram" style="width:100%;padding:8px;">
+    <select id="format" style="width:100%;margin-top:10px;padding:8px;">
+        <option value="mp3">MP3 (Audio)</option>
+        <option value="360">MP4 360p</option>
+        <option value="720">MP4 720p (HD)</option>
+        <option value="1080">MP4 1080p (SUPER HD)</option>
+    </select>
+    <button onclick="download()" style="width:100%;margin-top:10px;padding:10px;background:#00a67c;color:white;border:none;">Download</button>
+    <script>
+        async function download() {
+            const url = document.getElementById('url').value;
+            const format = document.getElementById('format').value;
+            const button = event.target;
+            button.textContent = 'Memproses...';
+            button.disabled = true;
+            
+            const response = await fetch('/.netlify/functions/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, format })
+            });
+            
+            const data = await response.json();
+            if (data.downloadUrl) {
+                window.open(data.downloadUrl, '_blank');
+            } else {
+                alert('Error: ' + (data.error || 'Gagal'));
+            }
+            button.textContent = 'Download';
+            button.disabled = false;
+        }
+    </script>
+</body>
+  </html>
